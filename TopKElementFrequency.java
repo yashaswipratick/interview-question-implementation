@@ -1,5 +1,32 @@
 import java.util.*;
 
+//problem statement - Given stream of integer, return Top K Frequenct element asked at any given point of time.
+//Input - Stream of integers
+//Requirement - return Top K Frequent element at any given point of time, requested by cuustomer.
+
+//Assumption
+// Stream of integer - data can also be very huge.
+// system should be read efficient.
+// K is always changing.
+
+
+//Design level improovements.
+//what if this code needs to be running on distributed system.
+ // what are components to be considered.
+ // cache - Hazelcast grid for key value pair.
+ // kafka - publish the updated value to the consumers to keep updating the cache with current values.
+ // db - dynamo db/rocks db.
+
+//NFR components
+ // System should be highle scalable and  reliable
+ // Eventual consistency.
+ // highle available(blue-green deployment)
+
+//Code level improovements.
+//How it will behave in multithreaded environment and what steps to consider to make it thread safe as well.
+  //Assumption for thread safety.
+  // 1. Synchronisation at object level(synchronise all the methods. performance can be an issue here).
+
 public class TopKElementFrequency {
 
     HashMap<Integer, Integer> map = new HashMap<>();
@@ -40,7 +67,7 @@ public class TopKElementFrequency {
             return new HashMap<>();
         }
 
-        //optimisation
+        //optimisation and handling edge cases.
         if (map.size() == K) {
             return map; // since the order of return is not required (Ascending or descending).
         }
@@ -56,7 +83,11 @@ public class TopKElementFrequency {
     private void getTopKInCaseCurHeapIsSmallerThanK(int K) {
         while (pq.size() <= K) {
             Pair poll = maxPQBackUp.poll();
+            
+            // O(log K) for adding the element and for heapify operation.
             pq.add(poll);
+            
+	    // O(1) for adding the element.
             inHeap.put(poll.getKey(), map.get(poll.getKey()));
         }
         removeElementFromPQ(K);
@@ -65,12 +96,16 @@ public class TopKElementFrequency {
     private void addAndRemoveElementFromPQ(int element, int K) {
         while (K > 0 && pq.size() > K) {
             Pair poll = pq.poll();
+            // O(1) for removing the element.
             inHeap.remove(poll.getKey());
             if (poppedElemStorageFromCurHeap.contains(poll.getKey())) {
+                // O(k) since for removing the element, all the elements has to be scanned.
                 maxPQBackUp.removeIf(pair1 -> pair1.getKey() == poll.getKey());
+                // O(log K) for adding the element and for heapify operation.
                 maxPQBackUp.add(new Pair(poll.getKey(), poll.getValue()));
             } else {
                 if (!poppedElemStorageFromCurHeap.contains(poll.getKey())) {
+                    // O(log K) for adding the element and for heapify operation.
                     maxPQBackUp.add(new Pair(poll.getKey(), poll.getValue()));
                 }
                 poppedElemStorageFromCurHeap.add(poll.getKey());
@@ -78,11 +113,20 @@ public class TopKElementFrequency {
         }
         if (inHeap.containsKey(element)) {
             int count = map.get(element) - 1;
+            
+            // O(k) since for removing the element, all the elements has to be scanned.
             pq.remove(new Pair(element, count));
+            
+            // O(log K) for adding the element and for heapify operation.
             pq.add(new Pair(element, map.get(element)));
+            
+            // O(1) for adding the element.
             inHeap.put(element, map.get(element));
         } else {
+            // O(log K) for adding the element and for heapify operation.
             pq.add(new Pair(element, map.get(element)));
+
+            // O(1) for adding the element.
             inHeap.put(element, map.get(element));
         }
     }
@@ -92,12 +136,17 @@ public class TopKElementFrequency {
             Pair poll = pq.poll();
             inHeap.remove(poll.getKey());
             if (poppedElemStorageFromCurHeap.contains(poll.getKey())) {
+                // O(k) since for removing the element, all the elements has to be scanned.
                 maxPQBackUp.removeIf(pair1 -> pair1.getKey() == poll.getKey());
+                // O(log K) for adding the element and for heapify operation.
                 maxPQBackUp.add(new Pair(poll.getKey(), map.get(poll.getKey())));
             } else {
                 if (!poppedElemStorageFromCurHeap.contains(poll.getKey())) {
+                    // O(log K) for adding the element and for heapify operation.
                     maxPQBackUp.add(new Pair(poll.getKey(), poll.getValue()));
                 }
+                
+  		// O(log K) for adding the element and for heapify operation.
                 poppedElemStorageFromCurHeap.add(poll.getKey());
             }
         }
