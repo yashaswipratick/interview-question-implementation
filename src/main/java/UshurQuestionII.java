@@ -27,6 +27,7 @@ public class UshurQuestionII {
     Output: 5
     Explanation: The longest substrings with no more than '3' distinct characters are "cbbeb" & "bbebi".
      */
+    //TC - O(N)
     public static int getLongestSubstringLength(String s, int K) {
         int count = 0;
         int i = 0;
