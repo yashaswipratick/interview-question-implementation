@@ -1,6 +1,6 @@
 package src.main.java;
 
-public class RoundIIQuestionIII {
+public class RoundIIQuestionI {
 
     /*
     Given an array of positive numbers and a positive number ‘k,’
