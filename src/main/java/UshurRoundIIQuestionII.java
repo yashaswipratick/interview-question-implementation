@@ -2,7 +2,7 @@ package src.main.java;
 
 import java.util.HashMap;
 
-public class UshurQuestionII {
+public class UshurRoundIIQuestionII {
 
     /*
     Given a string, find the length of the longest substring in it with no more than K distinct

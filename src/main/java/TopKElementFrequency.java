@@ -1,3 +1,5 @@
+package src.main.java;
+
 import java.util.*;
 
 //problem statement - Given stream of integer, return Top K Frequenct element asked at any given point of time.
